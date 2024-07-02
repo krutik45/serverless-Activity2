@@ -3,15 +3,20 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
 const { Storage } = require("@google-cloud/storage");
-const { v4: uuidv4 } = require("uuid");
 const storage = new Storage();
 const bucketName = "activity-2-f4bb7.appspot.com";
 
+//intitialization of firebase app
 admin.initializeApp();
 
+//db instance
 const db = admin.firestore();
+
+//reference to users collection
 const usersRef = db.collection("users");
 const express = require("express");
+
+//enabling cors for local testing
 const cors = require("cors")({ origin: true });
 const app = express();
 
@@ -23,7 +28,6 @@ exports.createUser = functions.https.onRequest(async (request, response) => {
       response.set("Access-Control-Allow-Origin", "*");
       response.set("Access-Control-Allow-Methods", "GET, POST");
 
-      console.log("request body in create", request.body);
       const { email, password } = request.body; // Assuming you receive name and email in request body
       // Add a new document with a generated ID
 
@@ -41,7 +45,6 @@ exports.createUser = functions.https.onRequest(async (request, response) => {
       return response.status(200).json({ id: newUserRef.id });
     } catch (error) {
       // Error handling
-      console.log("Error creating user: === >", error);
       return response.status(500).send("Failed to create user");
     }
   });
@@ -54,7 +57,6 @@ exports.verifyUser = functions.https.onRequest(async (request, response) => {
       response.set("Access-Control-Allow-Origin", "*");
       response.set("Access-Control-Allow-Methods", "GET, POST");
       const { email, password } = request.body;
-      console.log("======>", request);
       if (!email || !password) {
         return response.status(400).send("Email and password are required.");
       }
